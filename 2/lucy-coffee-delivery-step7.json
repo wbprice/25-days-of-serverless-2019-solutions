@@ -5,7 +5,7 @@
             "Send_Text_Message_(SMS)": {
                 "inputs": {
                     "body": {
-                        "body": "Start the coffee, set out 4 cups",
+                        "body": "deliver the coffee to Sister and Brother",
                         "from": "+12674934275",
                         "to": "+17572854165"
                     },
@@ -34,7 +34,7 @@
                 "recurrence": {
                     "frequency": "Month",
                     "interval": 12,
-                    "startTime": "2019-12-13T07:00:00Z",
+                    "startTime": "2019-12-13T07:45:00Z",
                     "timeZone": "W. Europe Standard Time"
                 },
                 "type": "Recurrence"
