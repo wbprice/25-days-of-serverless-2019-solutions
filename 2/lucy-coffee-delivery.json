@@ -1,0 +1,300 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "Delay_until": {
+                "inputs": {
+                    "until": {
+                        "timestamp": "2019-12-13T07:25:00Z"
+                    }
+                },
+                "runAfter": {
+                    "Send_Text_Message_(SMS)": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "Wait"
+            },
+            "Delay_until_2": {
+                "inputs": {
+                    "until": {
+                        "timestamp": "2019-12-13T07:30:00Z"
+                    }
+                },
+                "runAfter": {
+                    "Send_Text_Message_(SMS)_2": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "Wait"
+            },
+            "Delay_until_3": {
+                "inputs": {
+                    "until": {
+                        "timestamp": "2019-12-13T07:35:00Z"
+                    }
+                },
+                "runAfter": {
+                    "Send_Text_Message_(SMS)_3": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "Wait"
+            },
+            "Delay_until_4": {
+                "inputs": {
+                    "until": {
+                        "timestamp": "2019-12-13T07:39:00Z"
+                    }
+                },
+                "runAfter": {
+                    "Send_Text_Message_(SMS)_4": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "Wait"
+            },
+            "Delay_until_5": {
+                "inputs": {
+                    "until": {
+                        "timestamp": "2019-12-13T07:40:00Z"
+                    }
+                },
+                "runAfter": {
+                    "Send_Text_Message_(SMS)_5": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "Wait"
+            },
+            "Delay_until_6": {
+                "inputs": {
+                    "until": {
+                        "timestamp": "2019-12-13T07:45:00Z"
+                    }
+                },
+                "runAfter": {
+                    "Send_Text_Message_(SMS)_6": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "Wait"
+            },
+            "Delay_until_7": {
+                "inputs": {
+                    "until": {
+                        "timestamp": "2019-12-13T07:49:00Z"
+                    }
+                },
+                "runAfter": {
+                    "Send_Text_Message_(SMS)_7": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "Wait"
+            },
+            "Send_Text_Message_(SMS)": {
+                "inputs": {
+                    "body": {
+                        "body": "Start the coffee, set out 4 cups",
+                        "from": "+12674934275",
+                        "to": "+17572854165"
+                    },
+                    "host": {
+                        "connection": {
+                            "name": "@parameters('$connections')['twilio']['connectionId']"
+                        }
+                    },
+                    "method": "post",
+                    "path": "/Messages.json"
+                },
+                "runAfter": {},
+                "type": "ApiConnection"
+            },
+            "Send_Text_Message_(SMS)_2": {
+                "inputs": {
+                    "body": {
+                        "body": "pour two cups",
+                        "from": "+12674934275",
+                        "to": "+17572854165"
+                    },
+                    "host": {
+                        "connection": {
+                            "name": "@parameters('$connections')['twilio']['connectionId']"
+                        }
+                    },
+                    "method": "post",
+                    "path": "/Messages.json"
+                },
+                "runAfter": {
+                    "Delay_until": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "ApiConnection"
+            },
+            "Send_Text_Message_(SMS)_3": {
+                "inputs": {
+                    "body": {
+                        "body": "light the candles",
+                        "from": "+12674934275",
+                        "to": "+17572854165"
+                    },
+                    "host": {
+                        "connection": {
+                            "name": "@parameters('$connections')['twilio']['connectionId']"
+                        }
+                    },
+                    "method": "post",
+                    "path": "/Messages.json"
+                },
+                "runAfter": {
+                    "Delay_until_2": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "ApiConnection"
+            },
+            "Send_Text_Message_(SMS)_4": {
+                "inputs": {
+                    "body": {
+                        "body": "deliver the coffee to Mom and Dad",
+                        "from": "+12674934275",
+                        "to": "+17572854165"
+                    },
+                    "host": {
+                        "connection": {
+                            "name": "@parameters('$connections')['twilio']['connectionId']"
+                        }
+                    },
+                    "method": "post",
+                    "path": "/Messages.json"
+                },
+                "runAfter": {
+                    "Delay_until_3": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "ApiConnection"
+            },
+            "Send_Text_Message_(SMS)_5": {
+                "inputs": {
+                    "body": {
+                        "body": "return to kitchen, fill two more cups",
+                        "from": "+12674934275",
+                        "to": "+17572854165"
+                    },
+                    "host": {
+                        "connection": {
+                            "name": "@parameters('$connections')['twilio']['connectionId']"
+                        }
+                    },
+                    "method": "post",
+                    "path": "/Messages.json"
+                },
+                "runAfter": {
+                    "Delay_until_4": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "ApiConnection"
+            },
+            "Send_Text_Message_(SMS)_6": {
+                "inputs": {
+                    "body": {
+                        "body": "relight the candles",
+                        "from": "+12674934275",
+                        "to": "17572854165"
+                    },
+                    "host": {
+                        "connection": {
+                            "name": "@parameters('$connections')['twilio']['connectionId']"
+                        }
+                    },
+                    "method": "post",
+                    "path": "/Messages.json"
+                },
+                "runAfter": {
+                    "Delay_until_5": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "ApiConnection"
+            },
+            "Send_Text_Message_(SMS)_7": {
+                "inputs": {
+                    "body": {
+                        "body": "deliver the coffee to Sister and Brother",
+                        "from": "+12674934275",
+                        "to": "+17572854165"
+                    },
+                    "host": {
+                        "connection": {
+                            "name": "@parameters('$connections')['twilio']['connectionId']"
+                        }
+                    },
+                    "method": "post",
+                    "path": "/Messages.json"
+                },
+                "runAfter": {
+                    "Delay_until_6": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "ApiConnection"
+            },
+            "Send_Text_Message_(SMS)_8": {
+                "inputs": {
+                    "body": {
+                        "body": "return to kitchen, take a break!",
+                        "from": "+12674934275",
+                        "to": "+17572854165"
+                    },
+                    "host": {
+                        "connection": {
+                            "name": "@parameters('$connections')['twilio']['connectionId']"
+                        }
+                    },
+                    "method": "post",
+                    "path": "/Messages.json"
+                },
+                "runAfter": {
+                    "Delay_until_7": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "ApiConnection"
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {},
+        "parameters": {
+            "$connections": {
+                "defaultValue": {},
+                "type": "Object"
+            }
+        },
+        "triggers": {
+            "Recurrence": {
+                "recurrence": {
+                    "frequency": "Month",
+                    "interval": 12,
+                    "startTime": "2019-12-13T07:00:00Z",
+                    "timeZone": "W. Europe Standard Time"
+                },
+                "type": "Recurrence"
+            }
+        }
+    },
+    "parameters": {
+        "$connections": {
+            "value": {
+                "twilio": {
+                    "connectionId": "/subscriptions/0ae233cb-950a-4aeb-9fb0-8ed1923fec13/resourceGroups/lucy-coffee-delivery-rg/providers/Microsoft.Web/connections/twilio",
+                    "connectionName": "twilio",
+                    "id": "/subscriptions/0ae233cb-950a-4aeb-9fb0-8ed1923fec13/providers/Microsoft.Web/locations/eastus/managedApis/twilio"
+                }
+            }
+        }
+    }
+}
