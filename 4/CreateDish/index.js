@@ -1,7 +1,8 @@
 const azure = require("azure-storage");
 const table_service = azure.createTableService();
 const uuid = require("uuid/v4");
-const table_name = "holidaydishrsvptable";
+const table_name = process.env["AZURE_STORAGE_TABLE_NAME"];
+const partition_key = process.env["AZURE_STORAGE_TABLE_PARTITION_KEY"];
 
 function validateInput(payload, callback) {
   // Accepts a payload and callback function.
@@ -34,9 +35,10 @@ function createDish(payload, callback) {
   // Makes a request to an Azure Table API table.
   // Creates a new record and returns the result.
 
+  const id = uuid();
   const record = {
-    PartitionKey: { _: "holiday-dish-rsvp" },
-    RowKey: { _: uuid() },
+    PartitionKey: { _: partition_key },
+    RowKey: { _: id },
     ...payload
   };
 
@@ -46,19 +48,25 @@ function createDish(payload, callback) {
       return callback(error);
     }
 
-    callback(null, response);
+    return callback(null, {
+      id,
+      ...payload
+    });
   });
 }
 
-module.exports = async function(context, req) {
+module.exports = function(context, req) {
   validateInput(req.body, (err, payload) => {
     if (err) {
       // Handle errors, exit early.
       context.res = {
         status: 400,
+        headers: {
+          "Content-Type": "application/json"
+        },
         body: JSON.stringify({ message: err })
       };
-      return;
+      context.done();
     }
 
     createDish(payload, (err, payload) => {
@@ -66,17 +74,24 @@ module.exports = async function(context, req) {
         // Handle errors, exit early
         context.res = {
           status: 500,
+          headers: {
+            "Content-Type": "application/json"
+          },
           body: JSON.stringify({ message: err })
         };
-        return;
+        context.done();
       }
 
       // Otherwise, respond with the created record.
       // Return the created record
       context.res = {
         status: 200,
+        headers: {
+          "Content-Type": "application/json"
+        },
         body: JSON.stringify(payload)
       };
+      context.done();
     });
   });
 };

@@ -1,16 +1,47 @@
-module.exports = async function (context, req) {
-    context.log('JavaScript HTTP trigger function processed a request.');
+const azure = require("azure-storage");
+const table_service = azure.createTableService();
+const table_name = process.env["AZURE_STORAGE_TABLE_NAME"];
+const partition_key = process.env["AZURE_STORAGE_TABLE_PARTITION_KEY"];
 
-    if (req.query.name || (req.body && req.body.name)) {
-        context.res = {
-            // status: 200, /* Defaults to 200 */
-            body: "Hello " + (req.query.name || req.body.name)
-        };
+function listDishes(callback) {
+  // Lists the records in `table_name`
+
+  const query = new azure.TableQuery().where(
+    "PartitionKey eq ?",
+    partition_key
+  );
+
+  table_service.queryEntities(
+    table_name,
+    query,
+    null,
+    (error, result, response) => {
+      // Handle error, quit early.
+      console.log(result);
+      console.log(response);
+
+      if (error) {
+        return callback(error);
+      }
+
+      callback(null, result);
     }
-    else {
-        context.res = {
-            status: 400,
-            body: "Please pass a name on the query string or in the request body"
-        };
+  );
+}
+
+module.exports = async function(context, req) {
+  listDishes((err, response) => {
+    if (err) {
+      context.res = {
+        status: 500,
+        body: JSON.stringify({"message": err})
+      };
+      return;
     }
+
+    context.res = {
+      status: 200,
+      body: JSON.stringify(response)
+    };
+  });
 };
