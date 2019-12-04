@@ -24,24 +24,35 @@ function listDishes(callback) {
         return callback(error);
       }
 
-      callback(null, result);
+      const mapped_response = {
+        entries: result["entries"].map(entry => {
+          return {
+            id: entry["RowKey"]["_"],
+            dish: entry["dish"]["_"],
+            name: entry["name"]["_"]
+          };
+        })
+      };
+
+      callback(null, mapped_response);
     }
   );
 }
 
-module.exports = async function(context, req) {
+module.exports = function(context, req) {
   listDishes((err, response) => {
     if (err) {
       context.res = {
         status: 500,
-        body: JSON.stringify({"message": err})
+        body: JSON.stringify({ message: err })
       };
-      return;
+      context.done();
     }
 
     context.res = {
       status: 200,
       body: JSON.stringify(response)
     };
+    context.done();
   });
 };
