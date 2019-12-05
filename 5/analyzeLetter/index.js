@@ -37,7 +37,7 @@ function validateInput(input, callback) {
 }
 
 function detectLanguage(message, callback) {
-  // Passes text to the text analytics api, determines what language is being used.
+  // Passes message to the text analytics api, determines what language is being used.
   textAnalyticsClient
     .detectLanguage({
       languageBatchInput: {
@@ -66,6 +66,7 @@ function detectLanguage(message, callback) {
 }
 
 function detectNiceness(language, message, callback) {
+  // Passes message to the text analytics api, determines how nice the person is
   textAnalyticsClient
     .sentiment({
       multiLanguageBatchInput: {
@@ -98,7 +99,7 @@ function determineNaughtyOrNice(message, callback) {
       }
       return callback(null, {
         message,
-        language,
+        language: language["iso6391Name"],
         niceness
       });
     });
@@ -119,11 +120,7 @@ module.exports = function(context, req) {
     {
         "name": "Blaine",
         "message": "mina föräldrar är verkligen inte bra på tekniska saker",
-        "language": {
-            "name": "Swedish",
-            "iso6391Name": "sv",
-            "score": 1
-        },
+        "language": "sv",
         "niceness": 0
     }
   */
@@ -140,7 +137,6 @@ module.exports = function(context, req) {
     const { message, name } = body;
 
     determineNaughtyOrNice(message, (err, nicenessReport) => {
-      // do something with response
       if (err) {
         context.res = {
           status: 500,
