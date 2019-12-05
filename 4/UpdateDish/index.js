@@ -2,33 +2,7 @@ const azure = require("azure-storage");
 const table_service = azure.createTableService();
 const table_name = process.env["AZURE_STORAGE_TABLE_NAME"];
 const partition_key = process.env["AZURE_STORAGE_TABLE_PARTITION_KEY"];
-
-function validateInput(payload, callback) {
-  // Accepts a payload and callback function.
-  // Payload must include dish and name keys.
-  // If an error occurred, the callback is invoked with
-  // an error message as the first argument
-  // If the payload is OK, the callback is invoked with
-  // no error message and a sanitized payload.
-
-  const dish = payload["dish"];
-  const name = payload["name"];
-
-  if (!name) {
-    callback("'name' is a required field");
-  } else if (!dish) {
-    callback("'dish' is a required field");
-  } else if (typeof dish != "string") {
-    callback("'dish' should be a string");
-  } else if (typeof name != "string") {
-    callback("'name' should be a string");
-  } else {
-    callback(null, {
-      dish,
-      name
-    });
-  }
-}
+const utils = require('./../utils');
 
 function updateDish(id, payload, callback) {
   const record = {
@@ -41,12 +15,18 @@ function updateDish(id, payload, callback) {
     if (err) {
       return callback(err);
     }
-    return callback(null, response);
+    return callback(null, {
+      id,
+      ...payload
+    });
   });
 }
 
-module.exports = async function(context, req) {
+module.exports = function(context, req) {
   const id = req.params.id;
+
+  console.log("potato: " + id);
+
   if (!id) {
     context.res = {
       status: 404,
@@ -55,7 +35,7 @@ module.exports = async function(context, req) {
     context.done();
   }
 
-  validatePayload(req.body, (err, payload) => {
+  utils.validateInput(req.body, (err, payload) => {
     if (err) {
       context.res = {
         status: 400,

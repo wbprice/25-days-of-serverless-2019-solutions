@@ -3,33 +3,7 @@ const table_service = azure.createTableService();
 const uuid = require("uuid/v4");
 const table_name = process.env["AZURE_STORAGE_TABLE_NAME"];
 const partition_key = process.env["AZURE_STORAGE_TABLE_PARTITION_KEY"];
-
-function validateInput(payload, callback) {
-  // Accepts a payload and callback function.
-  // Payload must include dish and name keys.
-  // If an error occurred, the callback is invoked with
-  // an error message as the first argument
-  // If the payload is OK, the callback is invoked with
-  // no error message and a sanitized payload.
-
-  const dish = payload["dish"];
-  const name = payload["name"];
-
-  if (!name) {
-    callback("'name' is a required field");
-  } else if (!dish) {
-    callback("'dish' is a required field");
-  } else if (typeof dish != "string") {
-    callback("'dish' should be a string");
-  } else if (typeof name != "string") {
-    callback("'name' should be a string");
-  } else {
-    callback(null, {
-      dish,
-      name
-    });
-  }
-}
+const utils = require("./../utils");
 
 function createDish(payload, callback) {
   // Makes a request to an Azure Table API table.
@@ -56,7 +30,7 @@ function createDish(payload, callback) {
 }
 
 module.exports = function(context, req) {
-  validateInput(req.body, (err, payload) => {
+  utils.validateInput(req.body, (err, payload) => {
     if (err) {
       // Handle errors, exit early.
       context.res = {
