@@ -12,7 +12,7 @@ const textAnalyticsClient = new TextAnalyticsAPIClient.TextAnalyticsClient(
   endpoint
 );
 
-function validateInput(input, callback) {
+async function validateInput(input) {
   // Valid input should include a name and message field.
   // Confirm that those exist and are strings.
   // If there are any extra fields, omit them.
@@ -21,24 +21,24 @@ function validateInput(input, callback) {
   const message = input["message"];
 
   if (!name) {
-    callback("'name' is a required field.");
+    throw new Error("'name' is a required field.");
   } else if (!message) {
-    callback("'message' is a required field.");
-  } else if (typeof name != "string") {
-    callback("'name' should be a string'");
-  } else if (typeof message != "string") {
-    callback("'message' should be a string");
+    throw new Error("'message' is a required field.");
+  } else if (typeof name !== "string") {
+    throw new Error("'name' should be a string'");
+  } else if (typeof message !== "string") {
+    throw new Error("'message' should be a string");
   }
 
-  callback(null, {
+  return {
     name,
     message
-  });
+  };
 }
 
-function detectLanguage(message, callback) {
+function detectLanguage(message) {
   // Passes message to the text analytics api, determines what language is being used.
-  textAnalyticsClient
+  return textAnalyticsClient
     .detectLanguage({
       languageBatchInput: {
         documents: [
@@ -54,20 +54,20 @@ function detectLanguage(message, callback) {
       const detectedLanguages = document.detectedLanguages;
 
       if (result.errors.length) {
-        callback(result.errors);
+        return Promise.reject(result.errors);
       }
 
       const sortedDetectedLanguages = detectedLanguages.sort((a, b) =>
         a.score > b.score ? 1 : -1
       );
 
-      callback(null, sortedDetectedLanguages[0]);
+      return sortedDetectedLanguages[0];
     });
 }
 
-function detectNiceness(language, message, callback) {
+function detectNiceness(language, message) {
   // Passes message to the text analytics api, determines how nice the person is
-  textAnalyticsClient
+  return textAnalyticsClient
     .sentiment({
       multiLanguageBatchInput: {
         documents: [
@@ -81,32 +81,25 @@ function detectNiceness(language, message, callback) {
     })
     .then(result => {
       if (result.errors.length) {
-        return callback(result.errors);
+        return Promise.reject(result.errors);
       }
       const response = result.documents[0];
-      callback(null, response["score"]);
+      return response["score"];
     });
 }
 
-function determineNaughtyOrNice(message, callback) {
-  detectLanguage(message, (err, language) => {
-    if (err) {
-      return callback(err);
-    }
-    detectNiceness(language, message, (err, niceness) => {
-      if (err) {
-        return callback(err);
-      }
-      return callback(null, {
-        message,
-        language: language["iso6391Name"],
-        niceness
-      });
-    });
-  });
+async function determineNaughtyOrNice(message) {
+  const language = await detectLanguage(message);
+  const niceness = await detectNiceness(language, message);
+
+  return {
+    message,
+    language: language["iso6391Name"],
+    niceness
+  };
 }
 
-module.exports = function(context, req) {
+module.exports = async function(context, req) {
   /*
     Accepts a payload like:
 
@@ -125,34 +118,35 @@ module.exports = function(context, req) {
     }
   */
 
-  validateInput(req.body, (err, body) => {
-    if (err) {
-      context.res = {
-        status: 400,
-        body: JSON.stringify({ message: err })
-      };
-      context.done();
-    }
+  let body;
 
-    const { message, name } = body;
+  try {
+    body = await validateInput(req.body);
+  } catch (err) {
+    return {
+      status: 400,
+      body: JSON.stringify({ message: err })
+    };
+  }
 
-    determineNaughtyOrNice(message, (err, nicenessReport) => {
-      if (err) {
-        context.res = {
-          status: 500,
-          body: JSON.stringify({ message: err })
-        };
-        context.done();
-      }
+  const { message, name } = body;
+  let nicenessReport;
 
-      context.res = {
-        status: 200,
-        body: JSON.stringify({
-          name,
-          ...nicenessReport
-        })
-      };
-      context.done();
-    });
-  });
+  try {
+    nicenessReport = await determineNaughtyOrNice(message);
+  } catch (err) {
+    return {
+      status: 500,
+      body: JSON.stringify({ message: err })
+    };
+    throw err;
+  }
+
+  return {
+    status: 200,
+    body: JSON.stringify({
+      name,
+      ...nicenessReport
+    })
+  };
 };
