@@ -5,10 +5,9 @@
       "name": "req",
       "type": "httpTrigger",
       "direction": "in",
-      "route": "orchestrators/{functionName}",
+      "route": "orchestrators/reminders",
       "methods": [
-        "post",
-        "get"
+        "post"
       ]
     },
     {

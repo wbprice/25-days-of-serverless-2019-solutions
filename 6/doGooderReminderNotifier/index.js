@@ -1,4 +1,8 @@
-﻿/*
+﻿// environment variable?
+const slack_webhook_endpoint = process.env["SLACK_WEBHOOK_ENDPOINT"];
+const request = require("request");
+
+/*
  * This function is not intended to be invoked directly. Instead it will be
  * triggered by an orchestrator function.
  * 
